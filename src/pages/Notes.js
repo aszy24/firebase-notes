@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
 const Notes = ({ user }) => {
   const [notes, setNotes] = useState([]);
@@ -35,6 +43,12 @@ const Notes = ({ user }) => {
     setNotes(filteredDocuments);
   };
 
+  const deleteNote = async (id) => {
+    const selectedNote = doc(db, "notes", id);
+    await deleteDoc(selectedNote);
+    getNotes();
+  };
+
   return (
     <section>
       <h1>Notes</h1>
@@ -60,6 +74,7 @@ const Notes = ({ user }) => {
           <li key={doc.id}>
             <h3>{doc.title}</h3>
             <p>{doc.description}</p>
+            <button onClick={() => deleteNote(doc.id)}>Delete</button>
           </li>
         ))}
       </ul>

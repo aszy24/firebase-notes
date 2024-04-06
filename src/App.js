@@ -1,14 +1,32 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { auth, googleProvider } from "./firebase";
 import { signInWithPopup } from "firebase/auth";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import Notes from "./pages/Notes";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const signInWithGoogle = () => {
+    signInWithPopup(auth, googleProvider);
+  };
+
+
   return (
     <div className="App">
       <nav>
         <ul>
           <li>
-            <button>Sign in with Google</button>
+            <button onClick={signInWithGoogle}>Sign in with Google</button>
           </li>
           <li>
             <a href="/notes">notes</a>
@@ -19,16 +37,16 @@ function App() {
             </a>
           </li>
           <li>
-            <button>Sign out</button>
+            <button onClick={() => auth.signOut()}>Sign out</button>
           </li>
         </ul>
       </nav>
 
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element="login"/>
-          <Route path="/profile" element="profile"/>
-          <Route path="/notes" element="notes"/>
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/notes" element={<Notes />} />
         </Routes>
       </BrowserRouter>
     </div>

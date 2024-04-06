@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Notes from "./pages/Notes";
 import { useEffect, useState } from "react";
+import { ColorRing } from "react-loader-spinner";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -22,16 +23,27 @@ function App() {
     signInWithPopup(auth, googleProvider);
   };
 
-  if (isLoading) return "loading...";
+  if (isLoading)
+    return (
+  <div id="loader">
+      <ColorRing
+        visible={true}
+        height="80"
+        width="80"
+        ariaLabel="color-ring-loading"
+        wrapperStyle={{}}
+        wrapperClass="color-ring-wrapper"
+        colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+      />
+      </div>
+    );
 
   return (
     <div className="App">
       <nav>
         <ul>
           {user === null ? (
-            <li>
-              <button onClick={signInWithGoogle}>Sign in with Google</button>
-            </li>
+            <li onClick={signInWithGoogle}>Sign in with Google</li>
           ) : (
             <>
               <li>
@@ -39,12 +51,10 @@ function App() {
               </li>
               <li>
                 <a href="/profile">
-                  <img src="" alt="Profile" />
+                  <img src={user.photoURL} alt="Profile" />
                 </a>
               </li>
-              <li>
-                <button onClick={() => auth.signOut()}>Sign out</button>
-              </li>
+              <li onClick={() => auth.signOut()}>Sign out</li>
             </>
           )}
         </ul>
@@ -58,11 +68,15 @@ function App() {
           />
           <Route
             path="/profile"
-            element={user === null ? <Navigate to="/login" /> : <Profile user={user} />}
+            element={
+              user === null ? <Navigate to="/login" /> : <Profile user={user} />
+            }
           />
           <Route
             path="/notes"
-            element={user === null ? <Navigate to="/login" /> : <Notes user={user}/>}
+            element={
+              user === null ? <Navigate to="/login" /> : <Notes user={user} />
+            }
           />
         </Routes>
       </BrowserRouter>

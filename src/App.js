@@ -58,11 +58,11 @@ function App() {
           />
           <Route
             path="/profile"
-            element={user === null ? <Navigate to="/login" /> : <Profile />}
+            element={user === null ? <Navigate to="/login" /> : <Profile user={user} />}
           />
           <Route
             path="/notes"
-            element={user === null ? <Navigate to="/login" /> : <Notes />}
+            element={user === null ? <Navigate to="/login" /> : <Notes user={user}/>}
           />
         </Routes>
       </BrowserRouter>

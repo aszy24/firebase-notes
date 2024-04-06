@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 
-const Notes = ({user}) => {
+const Notes = ({ user }) => {
   const [notes, setNotes] = useState([]);
+  const [newNoteTitle, setNewNoteTitle] = useState("");
+  const [newNoteDescription, setnewNoteDescription] = useState("");
 
   useEffect(() => {
     getNotes();
@@ -11,11 +13,19 @@ const Notes = ({user}) => {
 
   const notesCollection = collection(db, "notes");
 
+  const createNote = async () => {
+    await addDoc(notesCollection, {
+      user: user.email,
+      title: newNoteTitle,
+      description: newNoteDescription,
+    });
+    setNewNoteTitle("");
+    setnewNoteDescription("");
+    getNotes();
+  };
+
   const getNotes = async () => {
-    const q = query(
-      collection(db, "notes"),
-      where("user", "==", user.email)
-    );
+    const q = query(collection(db, "notes"), where("user", "==", user.email));
 
     const snapshot = await getDocs(q);
     const filteredDocuments = snapshot.docs.map((doc) => ({
@@ -28,6 +38,23 @@ const Notes = ({user}) => {
   return (
     <section>
       <h1>Notes</h1>
+      <div>
+        <input
+          type="text"
+          placeholder="title..."
+          value={newNoteTitle}
+          onChange={(e) => setNewNoteTitle(e.target.value)}
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          placeholder="description..."
+          value={newNoteDescription}
+          onChange={(e) => setnewNoteDescription(e.target.value)}
+        />
+      </div>
+      <button onClick={createNote}>Add new Note</button>
       <ul>
         {notes.map((doc) => (
           <li key={doc.id}>
